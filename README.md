@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/golangci/golangci-lint-action/workflows/build-and-test/badge.svg)](https://github.com/golangci/golangci-lint-action/actions)
 
-It's the official GitHub action for [golangci-lint](https://github.com/golangci/golangci-lint) from its authors.
+It's the official GitHub Action for [golangci-lint](https://github.com/golangci/golangci-lint) from its authors.
 
 The action runs [golangci-lint](https://github.com/golangci/golangci-lint) and reports issues from linters.
 
@@ -12,20 +12,20 @@ The action runs [golangci-lint](https://github.com/golangci/golangci-lint) and r
 
 ## Supporting Us
 
-<!-- [![GitHub Sponsors](https://img.shields.io/badge/GitHub-Donate-blue?logo=github&style=for-the-badge)](https://github.com/sponsors/golangci) -->
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub-Donate-blue?logo=github&style=for-the-badge)](https://github.com/sponsors/golangci)
 [![Open Collective backers and sponsors](https://img.shields.io/badge/OpenCollective-Donate-blue?logo=opencollective&style=for-the-badge)](https://opencollective.com/golangci-lint)
 [![Linter Authors](https://img.shields.io/badge/Linter_Authors-Donate-blue?style=for-the-badge)](https://golangci-lint.run/product/thanks/)
 
 `golangci-lint` is a free and open-source project built by volunteers.
 
-If you value it, consider supporting us, we appreciate it! :heart:
+If you value it, consider supporting us; we appreciate it! :heart:
 
 ## How to use
 
 We recommend running this action in a job separate from other jobs (`go test`, etc.)
 because different jobs [run in parallel](https://help.github.com/en/actions/getting-started-with-github-actions/core-concepts-for-github-actions#job).
 
-Add `.github/workflows/golangci-lint.yml` with the following contents:
+Add a `.github/workflows/golangci-lint.yml` file with the following contents:
 
 <details>
 <summary>Simple Example</summary>
@@ -41,7 +41,7 @@ on:
 
 permissions:
   contents: read
-  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  # Optional: allow read access to pull requests. Use with `only-new-issues` option.
   # pull-requests: read
 
 jobs:
@@ -49,14 +49,14 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: stable
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: v1.60
+          version: v2.11
 ```
 
 </details>
@@ -75,7 +75,7 @@ on:
 
 permissions:
   contents: read
-  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  # Optional: allow read access to pull requests. Use with `only-new-issues` option.
   # pull-requests: read
 
 jobs:
@@ -87,14 +87,14 @@ jobs:
     name: lint
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go }}
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: v1.60
+          version: v2.11
 ```
 
 You will also likely need to add the following `.gitattributes` file to ensure that line endings for Windows builds are properly formatted:
@@ -120,7 +120,7 @@ on:
 
 env:
   GO_VERSION: stable
-  GOLANGCI_LINT_VERSION: v1.60
+  GOLANGCI_LINT_VERSION: v2.11
 
 jobs:
   detect-modules:
@@ -128,8 +128,8 @@ jobs:
     outputs:
       modules: ${{ steps.set-modules.outputs.modules }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
       - id: set-modules
@@ -142,12 +142,12 @@ jobs:
       matrix:
         modules: ${{ fromJSON(needs.detect-modules.outputs.modules) }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: golangci-lint ${{ matrix.modules }}
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
           version: ${{ env.GOLANGCI_LINT_VERSION }}
           working-directory: ${{ matrix.modules }}
@@ -179,7 +179,7 @@ jobs:
     with:
       os: ${{ matrix.os }}
       go-version: ${{ matrix.go-version }}
-      golangci-lint-version: v1.60
+      golangci-lint-version: v2.11
 ```
 
 ```yaml
@@ -201,7 +201,7 @@ on:
       golangci-lint-version:
         description: 'Golangci-lint version'
         type: string
-        default: 'v1.60'
+        default: 'v2.11'
 
 jobs:
   detect-modules:
@@ -209,12 +209,12 @@ jobs:
     outputs:
       modules: ${{ steps.set-modules.outputs.modules }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go-version }}
       - id: set-modules
-        shell: bash # require for Windows to be able to use $GITHUB_OUTPUT https://github.com/actions/runner/issues/2224
+        shell: bash # required for Windows to be able to use $GITHUB_OUTPUT https://github.com/actions/runner/issues/2224
         run: echo "modules=$(go list -m -json | jq -s '.' | jq -c '[.[].Dir]')" >> $GITHUB_OUTPUT
 
   golangci-lint:
@@ -224,12 +224,12 @@ jobs:
       matrix:
         modules: ${{ fromJSON(needs.detect-modules.outputs.modules) }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go-version }}
       - name: golangci-lint ${{ matrix.modules }}
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v9
         with:
           version: ${{ inputs.golangci-lint-version }}
           working-directory: ${{ matrix.modules }}
@@ -245,40 +245,86 @@ You will also likely need to add the following `.gitattributes` file to ensure t
 
 ## Compatibility
 
+* `v9.0.0` requires Nodejs runtime [`node24`](https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/)
+* `v8.0.0` works with `golangci-lint` version >= `v2.1.0`
+* `v7.0.0` supports golangci-lint v2 only.
 * `v6.0.0+` removes `annotations` option, removes the default output format (`github-actions`).
 * `v5.0.0+` removes `skip-pkg-cache` and `skip-build-cache` because the cache related to Go itself is already handled by `actions/setup-go`.
 * `v4.0.0+` requires an explicit `actions/setup-go` installation step before using this action: `uses: actions/setup-go@v5`.
   The `skip-go-installation` option has been removed.
 * `v2.0.0+` works with `golangci-lint` version >= `v1.28.3`
-* `v1.2.2` is deprecated due to we forgot to change the minimum version of `golangci-lint` to `v1.28.3` ([issue](https://github.com/golangci/golangci-lint-action/issues/39))
+* `v1.2.2` is deprecated because we forgot to change the minimum version of `golangci-lint` to `v1.28.3` ([issue](https://github.com/golangci/golangci-lint-action/issues/39))
 * `v1.2.1` works with `golangci-lint` version >= `v1.14.0` ([issue](https://github.com/golangci/golangci-lint-action/issues/39))
 
 ## Options
 
-### `version`
+### Overview
+
+| Option                                                        | Description                                           |
+|---------------------------------------------------------------|-------------------------------------------------------|
+| [`version`](#version)                                         | The version of golangci-lint to use.                  |
+| [`version-file`](#version-file)                               | Gets the version of golangci-lint to use from a file. |
+| [`install-mode`](#install-mode)                               | The mode to install golangci-lint.                    |
+| [`install-only`](#install-only)                               | Only install golangci-lint.                           |
+| [`verify`](#verify)                                           | Validates golangci-lint configuration file.           |
+| [`github-token`](#github-token)                               | Used by the `only-new-issues` option.                 |
+| [`only-new-issues`](#only-new-issues)                         | Show only new issues.                                 |
+| [`working-directory`](#working-directory)                     | The golangci-lint working directory.                  |
+| [`args`](#args)                                               | Golangci-lint command line arguments.                 |
+| [`skip-cache`](#skip-cache)                                   | Disable cache support.                                |
+| [`skip-save-cache`](#skip-save-cache)                         | Don't save cache.                                     |
+| [`cache-invalidation-interval`](#cache-invalidation-interval) | Number of days before cache invalidation.             |
+| [`problem-matchers`](#problem-matchers)                       | Forces the usage of the embedded problem matchers.    |
+| [Experimental](#experimental)                                 | Experimental options                                  |
+
+### Installation
+
+#### `version`
 
 (optional)
 
 The version of golangci-lint to use.
 
 When `install-mode` is:
-* `binary` (default): the value can be v1.2 or v1.2.3 or `latest` to use the latest version.
-* `goinstall`: the value can be v1.2.3, `latest`, or the hash of a commit.
+* `binary` (default): the value can be v2.3, v2.3.4, or `latest` to use the latest version.
+* `goinstall`: the value can be v2.3.4, `latest`, or the hash of a commit.
 * `none`: the value is ignored.
 
 <details>
 <summary>Example</summary>
 
 ```yml
-uses: golangci/golangci-lint-action@v6
+uses: golangci/golangci-lint-action@v9
 with:
-  version: v1.58
+  version: v2.11
   # ...
 ```
 
 </details>
 
-### `install-mode`
+#### `version-file`
+
+Gets the version of golangci-lint to use from a file.
+
+The path must be relative to the root of the project, or the `working-directory` if defined.
+
+This parameter supports `.golangci-lint-version`, and `.tool-versions` files.
+
+Only works with `install-mode: binary` (the default).
+
+<details>
+<summary>Example</summary>
+
+```yml
+uses: golangci/golangci-lint-action@v9
+with:
+  version-file: .tool-versions
+  # ...
+```
+
+</details>
+
+#### `install-mode`
 
 (optional)
 
@@ -286,23 +332,71 @@ The mode to install golangci-lint: it can be `binary`, `goinstall`, or `none`.
 
 The default value is `binary`.
 
+`goinstall` is not recommended, more explanations [here](https://golangci-lint.run/docs/welcome/install/local/#install-from-sources).
+
 <details>
 <summary>Example</summary>
 
 ```yml
-uses: golangci/golangci-lint-action@v6
+uses: golangci/golangci-lint-action@v9
 with:
-  install-mode: "goinstall"
+  install-mode: "none"
   # ...
 ```
 
 </details>
 
-### `github-token`
+#### `install-only`
 
 (optional)
 
-When using `only-new-issues` option, the GitHub API is used, so a token is required.
+If set to `true`, the action will only install golangci-lint.
+It does not run golangci-lint.
+
+The default value is `false`.
+
+<details>
+<summary>Example</summary>
+
+```yml
+uses: golangci/golangci-lint-action@v9
+with:
+  install-only: true
+  # ...
+```
+
+</details>
+
+### Run
+
+#### `verify`
+
+(optional)
+
+This option is `true` by default.
+
+If the GitHub Action detects a configuration file, validation will be performed unless this option is set to `false`.
+If there is no configuration file, validation is skipped.
+
+The JSON Schema used to validate the configuration depends on the version of golangci-lint you are using.
+
+<details>
+<summary>Example</summary>
+
+```yml
+uses: golangci/golangci-lint-action@v9
+with:
+  verify: false
+  # ...
+```
+
+</details>
+
+#### `github-token`
+
+(optional)
+
+When using the `only-new-issues` option, the GitHub API is used, so a token is required.
 
 By default, it uses the `github.token` from the action.
 
@@ -310,7 +404,7 @@ By default, it uses the `github.token` from the action.
 <summary>Example</summary>
 
 ```yml
-uses: golangci/golangci-lint-action@v6
+uses: golangci/golangci-lint-action@v9
 with:
   github-token: xxx
   # ...
@@ -318,7 +412,7 @@ with:
 
 </details>
 
-### `only-new-issues`
+#### `only-new-issues`
 
 (optional)
 
@@ -326,16 +420,16 @@ Show only new issues.
 
 The default value is `false`.
 
-* `pull_request` and `pull_request_target`: the action gets the diff of the PR content from the [GitHub API](https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#get-a-pull-request) and use it with `--new-from-patch`.
-* `push`: the action gets the diff of the push content (difference between commits before and after the push) from the [GitHub API](https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits) and use it with `--new-from-patch`.
-* `merge_group`: the action gets the diff by using `--new-from-rev` option (relies on git).
-  You should add the option `fetch-depth: 0` to `actions/checkout` step.
+* `pull_request` and `pull_request_target`: the action gets the diff of the PR content from the [GitHub API](https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#get-a-pull-request) and uses it with `--new-from-patch`.
+* `push`: the action gets the diff of the push content (the difference between commits before and after the push) from the [GitHub API](https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits) and uses it with `--new-from-patch`.
+* `merge_group`: the action gets the diff by using the `--new-from-rev` option (relies on git).
+  You should add the option `fetch-depth: 0` to the `actions/checkout` step.
 
 <details>
 <summary>Example</summary>
 
 ```yml
-uses: golangci/golangci-lint-action@v6
+uses: golangci/golangci-lint-action@v9
 with:
   only-new-issues: true
   # ...
@@ -343,17 +437,17 @@ with:
 
 </details>
 
-### `working-directory`
+#### `working-directory`
 
 (optional)
 
-Working directory, useful for monorepos.
+The golangci-lint working directory, useful for monorepos. The default is the project root.
 
 <details>
 <summary>Example</summary>
 
 ```yml
-uses: golangci/golangci-lint-action@v6
+uses: golangci/golangci-lint-action@v9
 with:
   working-directory: somedir
   # ...
@@ -361,36 +455,109 @@ with:
 
 </details>
 
-### `args`
+#### `args`
 
 (optional)
 
 golangci-lint command line arguments.
 
-Note: By default, the `.golangci.yml` file should be at the root of the repository.
-The location of the configuration file can be changed by using `--config=`
+> [!NOTE]
+> By default, the `.golangci.yml` file should be at the root of the repository.
+> The location of the configuration file can be changed by using `--config=`.
+
+> [!IMPORTANT]
+> Adding a `=` between the flag name and its value is important because the action parses the arguments on spaces.
 
 <details>
 <summary>Example</summary>
 
 ```yml
-uses: golangci/golangci-lint-action@v6
+uses: golangci/golangci-lint-action@v9
 with:
-  args: --timeout=30m --config=/my/path/.golangci.yml --issues-exit-code=0
+  # In some rare cases,
+  # you may need to use `${{ github.workspace }}` as the base directory to reference your configuration file.
+  args: --config=/my/path/.golangci.yml --issues-exit-code=0
   # ...
 ```
 
 </details>
 
-### `problem-matchers`
+### Cache
+
+#### `skip-cache`
 
 (optional)
 
-Force the usage of the embedded problem matchers.
+If set to `true`, all caching functionality will be completely disabled.
+This takes precedence over all other caching options.
 
-By default, the [problem matcher of Go (`actions/setup-go`)](https://github.com/actions/setup-go/blob/main/matchers.json) already handles the golangci-lint output (`colored-line-number`).
+The default value is `false`.
 
-Works only with `colored-line-number` (the golangci-lint default).
+<details>
+<summary>Example</summary>
+
+```yml
+uses: golangci/golangci-lint-action@v9
+with:
+  skip-cache: true
+  # ...
+```
+
+</details>
+
+#### `skip-save-cache`
+
+(optional)
+
+If set to `true`, caches will not be saved, but they may still be restored, requiring `skip-cache: false`.
+
+The default value is `false`.
+
+<details>
+<summary>Example</summary>
+
+```yml
+uses: golangci/golangci-lint-action@v9
+with:
+  skip-save-cache: true
+  # ...
+```
+
+</details>
+
+#### `cache-invalidation-interval`
+
+(optional)
+
+Periodically invalidate a cache every `cache-invalidation-interval` days to ensure that outdated data is removed and fresh data is loaded.
+
+The default value is `7`.
+
+If the number is `<= 0`, the cache will always be invalidated (not recommended).
+
+<details>
+<summary>Example</summary>
+
+```yml
+uses: golangci/golangci-lint-action@v9
+with:
+  cache-invalidation-interval: 15
+  # ...
+```
+
+</details>
+
+### Extra
+
+#### `problem-matchers`
+
+(optional)
+
+Forces the usage of the embedded problem matchers.
+
+By default, the [problem matcher of Go (`actions/setup-go`)](https://github.com/actions/setup-go/blob/main/matchers.json) already handles the default golangci-lint output (`text`).
+
+Works only with the `text` format (the golangci-lint default).
 
 https://golangci-lint.run/usage/configuration/#output-configuration
 
@@ -400,7 +567,7 @@ The default value is `false`.
 <summary>Example</summary>
 
 ```yml
-uses: golangci/golangci-lint-action@v6
+uses: golangci/golangci-lint-action@v9
 with:
   problem-matchers: true
   # ...
@@ -408,65 +575,43 @@ with:
 
 </details>
 
-### `skip-cache`
+### Experimental
 
-(optional)
+The following options are experimental: those may or may not be supported in the future, and so they will be either converted into a dedicated option or removed.
 
-If set to `true`, then all caching functionality will be completely disabled,
-takes precedence over all other caching options.
-
-The default value is `false`.
+List of comma-separated options.
 
 <details>
 <summary>Example</summary>
 
-```yml
-uses: golangci/golangci-lint-action@v6
+```yaml
+uses: golangci/golangci-lint-action@v9
 with:
-  skip-cache: true
-  # ...
+  experimental: "foo,bar"
 ```
 
 </details>
 
-### `skip-save-cache`
+#### `automatic-module-directories`
 
 (optional)
 
-If set to `true`, caches will not be saved, but they may still be restored, required `skip-cache: false`.
+This option will run golangci-lint in each module directory, useful for monorepos.
 
-The default value is `false`.
+The automatic detection of modules uses the `working-directory` as the base directory if defined, otherwise the root directory.
+
+> [!IMPORTANT]
+> - The cache key will refer to the `working-directory` (if defined) because all the golangci-lint runs must use the same cache directory/key.
+> - The version detection will only work if the project has a single module.
+> - If the project has multiple modules, the custom build file must be located in the repository root ( or `working-directory`).
 
 <details>
 <summary>Example</summary>
 
-```yml
-uses: golangci/golangci-lint-action@v6
+```yaml
+uses: golangci/golangci-lint-action@v9
 with:
-  skip-save-cache: true
-  # ...
-```
-
-</details>
-
-### `cache-invalidation-interval`
-
-(optional)
-
-Periodically invalidate the cache every `cache-invalidation-interval` days to ensure that outdated data is removed and fresh data is loaded.
-
-The default value is `7`.
-
-If set the number is `<= 0`, the cache will be always invalidate (Not recommended).
-
-<details>
-<summary>Example</summary>
-
-```yml
-uses: golangci/golangci-lint-action@v6
-with:
-  cache-invalidation-interval: 15
-  # ...
+  experimental: "automatic-module-directories"
 ```
 
 </details>
@@ -475,75 +620,85 @@ with:
 
 Currently, GitHub parses the action's output and creates [annotations](https://github.blog/2018-12-14-introducing-check-runs-and-annotations/).
 
-The restrictions of annotations are the following:
+The restrictions of annotations are as follows:
 
-1. Currently, they don't support Markdown formatting (see the [feature request](https://github.community/t5/GitHub-API-Development-and/Checks-Ability-to-include-Markdown-in-line-annotations/m-p/56704))
+1. Currently, they don't support Markdown formatting (see the [feature request](https://github.community/t5/GitHub-API-Development-and/Checks-Ability-to-include-Markdown-in-line-annotations/m-p/56704)).
 2. They aren't shown in the list of comments.
-   If you would like to have comments - please, up-vote [the issue](https://github.com/golangci/golangci-lint-action/issues/5).
+   If you would like to have comments, please up-vote [the issue](https://github.com/golangci/golangci-lint-action/issues/5).
 3. The number of annotations is [limited](https://github.com/actions/toolkit/blob/main/docs/problem-matchers.md#limitations).
 
-To enable annotations, you need to add the `checks` permission to your action.
+Permissions required:
 
 ```yaml annotate
 permissions:
   # Required: allow read access to the content for analysis.
   contents: read
-  # Optional: allow read access to pull request. Use with `only-new-issues` option.
+  # Optional: allow read access to pull requests. Use with `only-new-issues` option.
   pull-requests: read
-  # Optional: allow write access to checks to allow the action to annotate code in the PR.
-  checks: write
+```
+
+For annotations to work, use the default format output (`text`) and either use [`actions/setup-go`](https://github.com/actions/setup-go) in the job or enable the internal [problem matchers](#problem-matchers).
+
+## Module Plugin System
+
+The action will automatically detect the custom build configuration file `.custom-gcl.yml`,
+build and run the custom version of golangci-lint.
+
+For more information, see [module plugin system](https://golangci-lint.run/docs/plugins/module-plugins/).
+
+## Tips
+
+### Using Renovate to update the golangci-lint version
+
+[Renovate](https://docs.renovatebot.com/) can update both the action and the
+`golangci-lint` version it uses via its [github-actions manager](https://docs.renovatebot.com/modules/manager/github-actions/#commonly-used-community-actions)
+which is included in presets like `config:recommended`.
+
+It can also be enabled explicitly in `renovate.json`:
+
+```json
+{
+  "enabledManagers": ["github-actions"]
+}
 ```
 
 ## Performance
 
 The action was implemented with performance in mind:
 
-1. We cache data from golangci-lint analysis between builds by using [@actions/cache](https://github.com/actions/toolkit/tree/HEAD/packages/cache). 
+1. We cache data from golangci-lint analysis between builds by using [@actions/cache](https://github.com/actions/toolkit/tree/HEAD/packages/cache).
 2. We don't use Docker because image pulling is slow.
-3. We do as much as we can in parallel, e.g. we download cache, and golangci-lint binary in parallel.
-
-For example, in a repository of [golangci-lint](https://github.com/golangci/golangci-lint) running this action without the cache takes 50s, but with cache takes 14s:
-  * in parallel:
-    * 4s to restore 50 MB of cache
-    * 1s to find and install `golangci-lint`
-  * 1s to run `golangci-lint` (it takes 35s without cache)
+3. We do as much as we can in parallel, e.g., we download the cache and the golangci-lint binary in parallel.
+4. We rely on [`actions/setup-go`](https://github.com/actions/setup-go) for Go module cache.
 
 ## Internals
 
-We use JavaScript-based action.
-We don't use Docker-based action because:
+We use a JavaScript-based action.
+We don't use a Docker-based action because:
 
-1. Docker pulling is slow currently
-2. it's easier to use caching from [@actions/cache](https://github.com/actions/toolkit/tree/HEAD/packages/cache)
+1. Pulling Docker images is currently slow.
+2. It is easier to use caching from [@actions/cache](https://github.com/actions/toolkit/tree/HEAD/packages/cache).
 
-We support different platforms, such as `ubuntu`, `macos`, and `windows` with `x32` and `x64` archs.
+We support different platforms, such as `ubuntu`, `macos`, and `windows` with `x32` and `x64` architectures.
 
-Inside our action, we perform 3 steps:
+Inside our action, we perform three steps:
 
-1. Setup environment running in parallel:
-   * restore [cache](https://github.com/actions/cache) of previous analyses
-   * fetch [action config](https://github.com/golangci/golangci-lint/blob/HEAD/assets/github-action-config.json) and find the latest `golangci-lint` patch version for needed version
-     (users of this action can specify only minor version of `golangci-lint`).
-     After that install [golangci-lint](https://github.com/golangci/golangci-lint) using [@actions/tool-cache](https://github.com/actions/toolkit/tree/HEAD/packages/tool-cache)
-2. Run `golangci-lint` with specified by user `args`
-3. Save cache for later builds
+1. Set up the environment in parallel:
+   * Restore the [cache](https://github.com/actions/cache) from previous analyses.
+   * Fetch the [action config](https://github.com/golangci/golangci-lint/blob/HEAD/assets/github-action-config.json) and find the latest `golangci-lint` patch version for the required version
+     (users of this action can specify only the minor version of `golangci-lint`).
+     After that, install [golangci-lint](https://github.com/golangci/golangci-lint) using [@actions/tool-cache](https://github.com/actions/toolkit/tree/HEAD/packages/tool-cache).
+2. Run `golangci-lint` with the arguments `args` specified by the user.
+3. Save the cache for later builds.
 
 ### Caching internals
 
 1. We save and restore the following directory: `~/.cache/golangci-lint`.
 2. The primary caching key looks like `golangci-lint.cache-{runner_os}-{working_directory}-{interval_number}-{go.mod_hash}`.
-   Interval number ensures that we periodically invalidate our cache (every 7 days).
-   `go.mod` hash ensures that we invalidate the cache early - as soon as dependencies have changed.
+   The interval number ensures that we periodically invalidate our cache (every 7 days).
+   The `go.mod` hash ensures that we invalidate the cache early — as soon as dependencies have changed.
 3. We use [restore keys](https://help.github.com/en/actions/configuring-and-managing-workflows/caching-dependencies-to-speed-up-workflows#matching-a-cache-key):
    `golangci-lint.cache-{runner_os}-{working_directory}-{interval_number}-`.
-   GitHub matches keys by prefix if we have no exact match for the primary cache.
+   GitHub matches keys by prefix if there is no exact match for the primary cache.
 
 This scheme is basic and needs improvements. Pull requests and ideas are welcome.
-
-## Development of this action
-
-1. Install [act](https://github.com/nektos/act#installation)
-2. Make a symlink for `act` to work properly: `ln -s . golangci-lint-action`
-3. Install dependencies: `npm install`
-4. Build: `npm run build`
-5. Run `npm run local` after any change to test it
